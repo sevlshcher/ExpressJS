@@ -42,10 +42,12 @@ router.get('/', (req, res, next) => {
   let social = db.get('social').value(),
     skills = db.get('skills').value(),
     products = db.get('products').value()
+
   res.render('pages/index', {
     social: social,
     skills: skills,
-    products: products
+    products: products,
+    msgemail: req.flash('msgemail')
   });
 });
 
@@ -57,6 +59,7 @@ router.post('/', (req, res, next) => {
       message: req.body.message
     })
     .write()
+  req.flash('msgemail', 'Sending was successful')
   res.redirect('/')
 });
 
@@ -64,7 +67,8 @@ router.post('/', (req, res, next) => {
 router.get('/login', (req, res, next) => {
   let social = db.get('social').value()
   res.render('pages/login', {
-    social: social
+    social: social,
+    msglogin: req.flash('msglogin')
   });
 });
 
@@ -72,6 +76,7 @@ router.post('/login', async (req, res, next) => {
   try {
     if(req.body.email === process.env.EMAIL &&
       req.body.password === process.env.PASS) {
+        req.flash('msglogin', 'Authorization was successful')
         res.redirect('/admin')
     } else {
       const hashedPassword = await bcrypt.hash(req.body.password, 10)
@@ -81,6 +86,7 @@ router.post('/login', async (req, res, next) => {
           password: hashedPassword
         })
         .write()
+      req.flash('msglogin', 'Wrong email or password')
       res.redirect('/login')
     }
   } catch {
@@ -90,7 +96,10 @@ router.post('/login', async (req, res, next) => {
 
 // Admin page
 router.get('/admin', (req, res, next) => {
-  res.render('pages/admin');
+  res.render('pages/admin', {
+    msgskill: req.flash('msgskill'),
+    msgfile: req.flash('msgfile')
+  });
 });
 
 router.post('/admin/skills', (req, res, next) => {
@@ -118,6 +127,7 @@ router.post('/admin/skills', (req, res, next) => {
       .assign({number: Number(req.body.years)})
       .write()
   }
+  req.flash('msgskill', 'Skills was changed')
   res.redirect('/admin')
 });
 
@@ -135,9 +145,10 @@ router.post('/admin/upload', (req, res, next) => {
           price: req.body.price
         })
         .write()
+      req.flash('msgfile', 'Photo was uploaded successfuly')
+      res.redirect('/admin')
     }
   });
-  res.redirect('/admin')
 });
 
 module.exports = router;
