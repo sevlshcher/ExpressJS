@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
     social: social,
     skills: skills,
     products: products,
-    msgemail: req.flash('msgemail')
+    msgemail: req.flash('msgemail')[0]
   });
 });
 
@@ -35,7 +35,7 @@ router.get('/login', (req, res, next) => {
   let social = db.get('social').value()
   res.render('pages/login', {
     social: social,
-    msglogin: req.flash('msglogin')
+    msglogin: req.flash('msglogin')[0]
   });
 });
 
@@ -53,8 +53,8 @@ router.post('/login', (req, res, next) => {
 // Admin page
 router.get('/admin', (req, res, next) => {
   res.render('pages/admin', {
-    msgskill: req.flash('msgskill'),
-    msgfile: req.flash('msgfile')
+    msgskill: req.flash('msgskill')[0],
+    msgfile: req.flash('msgfile')[0]
   });
 });
 
